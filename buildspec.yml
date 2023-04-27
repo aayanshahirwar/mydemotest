@@ -3,14 +3,25 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - $(aws ecr get-login --no-include-email --region us-east-1)
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 121566014721.dkr.ecr.us-east-1.amazonaws.com
+      - REPOSITORY_URI=121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
       - docker build -t youtube:latest .
-      - docker tag youtube:latest 229900438445.dkr.ecr.us-east-1.amazonaws.com/youtube:latest
+      - docker tag youtube:latest 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest
   post_build:
     commands:
-      - docker push 229900438445.dkr.ecr.us-east-1.amazonaws.com/youtube:latest
-      - printf '[{"name":helloWorld,"imageUri":"%s"}]' 229900438445.dkr.ecr.us-east-1.amazonaws.com/youtube:latest > imagedefinitions.json
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push youtube:latest 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest
+      - docker push youtube:latest 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest:youtube:latest
+      - echo Writing image definitions file...
+      - printf '[{"name":"helloWorld","imageUri":"%s"}]' 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest > imagedefinitions.json
 artifacts:
-  files: imagedefinitions.json
+    files: imagedefinitions.json
