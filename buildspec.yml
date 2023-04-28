@@ -22,6 +22,6 @@ phases:
       - docker push 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest
       - docker push 121566014721.dkr.ecr.us-east-1.amazonaws.com/prodbuild:latest:latest
       - echo Writing image definitions file...
-      - printf '[{"name":"hello-world","imageUri":"%s"}]' 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest > imagedefinitions.json
+      - printf '[{"name":"helloWorld","imageUri":"%s"}]' 121566014721.dkr.ecr.us-east-1.amazonaws.com/youtube:latest > imagedefinitions.json
 artifacts:
     files: imagedefinitions.json
